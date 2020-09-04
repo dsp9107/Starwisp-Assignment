@@ -1,7 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-// const cors = require("cors");
 
 require("dotenv").config();
 
@@ -9,6 +8,7 @@ const dbConfig = require("./api/helpers/dbConfig");
 const connection = require("./api/helpers/dbConn");
 
 const userRoutes = require("./api/routes/users");
+const universityRoutes = require("./api/routes/universities");
 
 const port = process.env.PORT;
 const app = express();
@@ -40,7 +40,6 @@ app.use((req, res, next) => {
 
 app.use(morgan("dev"));
 app.use(express.json());
-// app.use(cors());
 app.use(cookieParser());
 app.use(express.static("public"));
 
@@ -49,7 +48,7 @@ app.use(express.static("public"));
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     if (req.method === "OPTIONS") {
-        res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
+        res.header("Access-Control-Allow-Methods", "GET, POST");
         return res.status(200).json({});
     }
     next();
@@ -58,10 +57,7 @@ app.use((req, res, next) => {
 //Routes
 
 app.use("/users", userRoutes);
-app.get("/knock", (req, res) => {
-    res.cookie("msg", "HELLOWORLD");
-    res.send("HELLO");
-});
+app.use("/universities", universityRoutes);
 
 //Error Handling
 
