@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
@@ -41,7 +42,7 @@ app.use((req, res, next) => {
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static("public"));
+app.use(express.static("public/build"));
 
 //Security
 
