@@ -25,51 +25,6 @@ exports.fetchUniversities = (req, res, next) => {
         });
 };
 
-// exports.addUniversity = (req, res, next) => {
-//     //Validate Input
-//     validator
-//         .pass(req.body)
-//         //Run Query
-//         .then(() => {
-//             const q = `INSERT INTO Uni_details SET ?`;
-//             connection(dbConfig)
-//                 .then((conn) => {
-//                     query(conn, q, req.body)
-//                         .then((result) => {
-//                             console.log(result);
-//                             if (result.affectedRows == 1) {
-//                                 res.json({
-//                                     result: {
-//                                         message: "Addition Successful",
-//                                         id: result.insertId,
-//                                     },
-//                                 });
-//                             }
-//                         })
-//                         .catch((err) => {
-//                             console.log(err);
-//                             res.status(500).json({
-//                                 error: {
-//                                     code: err.status,
-//                                     message: err.message,
-//                                 },
-//                             });
-//                         });
-//                     conn.end();
-//                 })
-//                 .catch((err) => {
-//                     console.log(err);
-//                     res.status(500).json({
-//                         error: err,
-//                     });
-//                 });
-//         })
-//         .catch((err) => {
-//             console.log({ err });
-//             res.status(err.code).json(err.msg);
-//         });
-// };
-
 exports.addUniversity = (req, res, next) => {
     validator
         .pass(req.body)
@@ -115,10 +70,10 @@ exports.updateUniversity = (req, res, next) => {
                             console.log(result);
                             if (result.affectedRows == 1) {
                                 res.json({
-                                    result: { message: "Update Successful" },
+                                    result: { message: "Updation Successful" },
                                 });
                             } else {
-                                res.json({
+                                res.status(404).json({
                                     result: { message: "No Entry Found" },
                                 });
                             }
@@ -164,7 +119,7 @@ exports.deleteUniversity = (req, res, next) => {
                                     result: { message: "Deletion Successful" },
                                 });
                             } else {
-                                res.json({
+                                res.status(404).json({
                                     result: { message: "No Entry Found" },
                                 });
                             }

@@ -21,7 +21,7 @@ exports.login = (req, res, next) => {
                     if (results.length > 0) {
                         return results[0];
                     } else {
-                        throw new Error("not registered");
+                        throw new Error("incorrect credentials");
                     }
                 })
                 .then((result) => {
@@ -30,7 +30,7 @@ exports.login = (req, res, next) => {
                     ) {
                         return result.user_id;
                     } else {
-                        throw new Error("incorrect password");
+                        throw new Error("incorrect credentials");
                     }
                 })
                 .then(generateJWT)
