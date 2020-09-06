@@ -12,6 +12,7 @@ import {
     Input,
     FormFeedback,
     FormText,
+    
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
@@ -222,7 +223,7 @@ export default class Dashboard extends React.Component {
             });
     }
 
-    findUni = (uid) => {
+    getUniByUID = (uid) => {
         var index = -1;
         var uni = this.state.universities.find(function (item, i) {
             if (item.uid === uid) {
@@ -281,7 +282,7 @@ export default class Dashboard extends React.Component {
                                     ...this.state.updateUni,
                                     uid: university.uid,
                                     university: this.state.universities[
-                                        this.findUni(university.uid).index
+                                        this.getUniByUID(university.uid).index
                                     ],
                                 },
                             });
