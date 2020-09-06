@@ -7,13 +7,13 @@
 
 ## Setup
 
-Step 1
+- Install dependencies
 
-`npm install`
+```bash
+npm install
+```
 
-Step 2
-
-Create a .env file in the root directory with these contents
+- Create a .env file in the root directory with these contents. replace `<...>` with your credentials
 
 ```
 PORT=9107
@@ -25,11 +25,30 @@ DB_DATABASE=starwisp
 DB_ENV=testing
 ```
 
-replace `<...>` with your credentials
+- If you have `nodemon` installed globally, start the server with
+
+```bash
+npm start
+```
+
+- If not, start the server with
+
+```bash
+node .
+```
+
+- Serve React App
+
+```bash
+cd public
+yarn serve
+```
 
 ## API
 
 All the entrypoints are defined here.
+
+Root URL - [http://localhost:9107/api](http://localhost:9107/api)
 
 ### Routes - Users
 
