@@ -36,7 +36,7 @@ POST
 -   **Expected Responses**
     -   Success
         -   Code: `200`
-        -   Body: `{"success":{"message":"Addition Successful","payload":[int]}}`
+        -   Body: `{"success":{"message":"Addition Successful","payload":[uid]}}`
     -   Unauthorized
         -   Code: `401`
         -   Body: `{"error":{"message":"Not Logged In"}}`
@@ -60,10 +60,10 @@ GET
 -   **Expected Responses**
     -   Success
         -   Code: `200`
-        -   Body: `{"result":{"message":"Addition Successful","id":[int]}}`
+        -   Body: `{"success":{"message":"Entries Found","payload":[universities]}}`
     -   Unauthorized
         -   Code: `401`
-        -   Body: `{"error":{"message":"not logged in"}}`
+        -   Body: `{"error":{"message":"Not Logged In"}}`
 
 ## Update One
 
@@ -102,7 +102,7 @@ PUT
         -   Body: `{"success":{"message":"Updation Successful"}}`
     -   Failure
         -   Code: `404`
-        -   Body: `{"result":{"message":"No Entry Found"}}`
+        -   Body: `{"error":{"message":"No Entry Found"}}`
     -   Unauthorized
         -   Code: `401`
         -   Body: `{"error":{"message":"Not Logged In"}}`
