@@ -13,6 +13,8 @@
 npm install
 ```
 
+- Import [this database dump](https://github.com/dsp9107/Starwisp-Assignment/blob/master/starwisp-mysql-dump.sql) into MySQL
+
 - Create a .env file in the root directory with these contents. replace `<...>` with your credentials
 
 ```
