@@ -10,12 +10,20 @@ class AuthService {
                 password,
             })
             .then((response) => {
-                console.log(response);
-                if (response.data.payload) {
-                    window.localStorage.setItem("user", JSON.stringify(response.data));
+                if (response.data.success) {
+                    window.localStorage.setItem(
+                        "user",
+                        JSON.stringify({
+                            username,
+                            token: response.data.success.payload,
+                        })
+                    );
                 }
 
                 return response.data;
+            })
+            .catch((error) => {
+                return { error: error.response };
             });
     }
 
@@ -24,7 +32,8 @@ class AuthService {
     }
 
     getCurrentUser() {
-        return JSON.parse(window.localStorage.getItem("user"));
+        const item = window.localStorage.getItem("user");
+        return item !== null ? JSON.parse(item).username : null;
     }
 }
 

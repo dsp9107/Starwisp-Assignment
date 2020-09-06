@@ -16,9 +16,12 @@ import {
     FormGroup,
     Label,
     Input,
+    UncontrolledDropdown,
+    DropdownToggle,
+    DropdownMenu,
+    DropdownItem,
 } from "reactstrap";
-// import Cookies from "js-cookie";
-// import AuthService from "../services/auth.service";
+import AuthService from "../services/auth.service";
 
 export default class App extends React.Component {
     constructor(props) {
@@ -26,16 +29,13 @@ export default class App extends React.Component {
 
         this.toggleCollapse = this.toggleCollapse.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
-        this.toggleAuth = this.toggleAuth.bind(this);
         this.handleLogin = this.handleLogin.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
 
         this.state = {
             isCollapseOpen: false,
             isModalOpen: false,
-            isLoggedIn:
-                JSON.parse(window.sessionStorage.getItem("userLoggedIn")) ||
-                false,
+            user: AuthService.getCurrentUser(),
         };
     }
 
@@ -51,90 +51,29 @@ export default class App extends React.Component {
         });
     }
 
-    toggleAuth() {
-        window.sessionStorage.setItem(
-            "userLoggedIn",
-            JSON.stringify(!this.state.isLoggedIn)
-        );
-        this.setState({
-            isLoggedIn: !this.state.isLoggedIn,
-        });
-    }
-
     handleLogin(event) {
-        const requestOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-            },
-            body: JSON.stringify({
-                username: this.username.value,
-                password: this.password.value,
-            }),
-        };
-        fetch("http://localhost:9107/api/users/login", requestOptions)
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.success) {
+        AuthService.login(this.username.value, this.password.value)
+            .then((result) => {
+                if (result.success) {
                     this.toggleModal();
-                    this.toggleAuth();
                     window.location.href = "/dashboard";
-                } else if (data.error) {
-                    throw new Error(data.error.message);
+                } else if (result.error) {
+                    throw new Error(result.error.data.error.message);
                 }
             })
             .catch((error) => {
+                console.log(error);
                 this.setState({
                     loginError: error.message,
                 });
-                console.log(error);
             });
-
-        // AuthService.login(this.username.value, this.password.value).then(
-        //     (result) => {
-        //         console.log(result);
-        //         console.log(AuthService.getCurrentUser());
-        //     },
-        //     (error) => {
-        //         const resMessage =
-        //             (error.response &&
-        //                 error.response.data &&
-        //                 error.response.data.message) ||
-        //             error.message ||
-        //             error.toString();
-
-        //         this.setState({
-        //             loading: false,
-        //             message: resMessage,
-        //         });
-        //     }
-        // );
 
         event.preventDefault();
     }
-    componentDidMount() {
-        sessionStorage.setItem("isUserLogged", false);
-    }
 
     handleLogout() {
-        this.toggleAuth();
+        AuthService.logout();
         window.location.href = "/home";
-        // fetch("http://localhost:9107/users/logout")
-        //     .then((response) => response.json())
-        //     .then((data) => {
-        //         if (data.success) {
-        //             this.toggleAuth();
-        //         } else if (data.error) {
-        //             throw new Error(data.error.message);
-        //         }
-        //     })
-        //     .catch((error) => {
-        //         this.setState({
-        //             loginError: error.message,
-        //         });
-        //         console.log(error);
-        //     });
     }
 
     render() {
@@ -145,24 +84,24 @@ export default class App extends React.Component {
                     <NavbarToggler onClick={this.toggleCollapse} />
                     <Collapse isOpen={this.state.isCollapseOpen} navbar>
                         <Nav className="ml-auto" navbar>
-                            {this.state.isLoggedIn === true && (
-                                <NavItem>
-                                    <NavLink href="/dashboard">
-                                        Dashboard
-                                    </NavLink>
-                                </NavItem>
+                            {!!this.state.user === true && (
+                                <UncontrolledDropdown nav inNavbar>
+                                    <DropdownToggle nav caret>
+                                        {this.state.user}
+                                    </DropdownToggle>
+                                    <DropdownMenu right>
+                                        <DropdownItem
+                                            onClick={this.handleLogout}
+                                            style={{
+                                                cursor: "pointer",
+                                            }}
+                                        >
+                                            Logout
+                                        </DropdownItem>
+                                    </DropdownMenu>
+                                </UncontrolledDropdown>
                             )}
-                            {this.state.isLoggedIn === true && (
-                                <NavItem>
-                                    <NavLink
-                                        onClick={this.handleLogout}
-                                        style={{ cursor: "pointer" }}
-                                    >
-                                        Logout
-                                    </NavLink>
-                                </NavItem>
-                            )}
-                            {this.state.isLoggedIn === false && (
+                            {!!this.state.user === false && (
                                 <NavItem>
                                     <NavLink
                                         onClick={this.toggleModal}
@@ -193,7 +132,6 @@ export default class App extends React.Component {
                                     innerRef={(input) =>
                                         (this.username = input)
                                     }
-                                    value="dsp9107"
                                 />
                             </FormGroup>
 
@@ -207,7 +145,6 @@ export default class App extends React.Component {
                                     innerRef={(input) =>
                                         (this.password = input)
                                     }
-                                    value="somethingVerySecure"
                                 />
                             </FormGroup>
 
