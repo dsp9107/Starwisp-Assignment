@@ -1,7 +1,7 @@
-const path = require("path");
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 require("dotenv").config();
 
@@ -40,16 +40,19 @@ app.use((req, res, next) => {
 });
 
 app.use(morgan("dev"));
-app.use(express.json());
 app.use(cookieParser());
-app.use(express.static("public/build"));
+app.use(express.json());
+app.use(cors());
+// app.use(express.static(path.join(__dirname, "..", "build")));
+// app.use(express.static("public/build"));
 
 //Security
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
+
     if (req.method === "OPTIONS") {
-        res.header("Access-Control-Allow-Methods", "GET, POST");
+        res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
         return res.status(200).json({});
     }
     next();
@@ -57,8 +60,12 @@ app.use((req, res, next) => {
 
 //Routes
 
-app.use("/users", userRoutes);
-app.use("/universities", universityRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/universities", universityRoutes);
+
+// app.get("/*", (req, res) => {
+//     res.sendFile(path.join(__dirname, "public", "build", "index.html"));
+// });
 
 //Error Handling
 
