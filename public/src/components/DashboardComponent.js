@@ -20,61 +20,85 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import UserService from "../services/user.service";
+import userService from "../services/user.service";
 
-const renderUniversity = (university) => {
-    return (
-        <tr key={university.uid}>
-            <td>{university.uid}</td>
-            <td>{university.uniname}</td>
-            <td>{university.registration_date}</td>
-            <td>{university.expiry_date}</td>
-            <td>{university.imgurl}</td>
-            <td>{university.students}</td>
-            <td>{university.email}</td>
-            <td>{university.weburl}</td>
-            <td>{university.contact_no}</td>
-            <td></td>
-            <td align="center">
-                <span>
-                    <FontAwesomeIcon icon={faPen} />
-                </span>
-            </td>
-            <td align="center">
-                <span>
-                    <FontAwesomeIcon icon={faTrash} />
-                </span>
-            </td>
-        </tr>
-    );
-};
+// const renderUniversity = (university) => {
+//     return (
+//         <tr key={university.uid}>
+//             <td>{university.uid}</td>
+//             <td>{university.uniname}</td>
+//             <td>{university.registration_date}</td>
+//             <td>{university.expiry_date}</td>
+//             <td>{university.imgurl}</td>
+//             <td>{university.students}</td>
+//             <td>{university.email}</td>
+//             <td>{university.weburl}</td>
+//             <td>{university.contact_no}</td>
+//             <td></td>
+//             <td align="center">
+//                 <span>
+//                     <FontAwesomeIcon icon={faPen} />
+//                 </span>
+//             </td>
+//             <td align="center">
+//                 <span
+//                     onClick={() => {
+//                         console.log(university.uid);
+//                         userService
+//                             .deleteUniversity(university.uid)
+//                             .then((response) => {
+//                                 if (response.success) {
+//                                     this.notifySuccess(
+//                                         response.success.message
+//                                     );
+//                                     this.fetchUnis();
+//                                     this.toggleModal();
+//                                 } else {
+//                                     this.notifyFailure(response.error.message);
+//                                     this.setState({
+//                                         registerError: response.error.message,
+//                                     });
+//                                 }
+//                             })
+//                             .catch((error) => {
+//                                 console.log(error);
+//                             });
+//                     }}
+//                 >
+//                     <FontAwesomeIcon icon={faTrash} />
+//                 </span>
+//             </td>
+//         </tr>
+//     );
+// };
 
-const UniTable = (props) => {
-    if (props.universities && props.universities.length !== 0) {
-        return (
-            <Table hover responsive>
-                <thead>
-                    <tr>
-                        <th>uid</th>
-                        <th>name</th>
-                        <th>reg.</th>
-                        <th>exp.</th>
-                        <th>imgurl</th>
-                        <th>students</th>
-                        <th>mail</th>
-                        <th>web</th>
-                        <th>contact</th>
-                        <th></th>
-                        <th>edit</th>
-                        <th>delete</th>
-                    </tr>
-                </thead>
-                <tbody>{props.universities.map(renderUniversity)}</tbody>
-            </Table>
-        );
-    } else {
-        return <span>No Data Found</span>;
-    }
-};
+// const UniTable = (props) => {
+//     if (props.universities && props.universities.length !== 0) {
+//         return (
+//             <Table hover responsive>
+//                 <thead>
+//                     <tr>
+//                         <th>uid</th>
+//                         <th>name</th>
+//                         <th>reg.</th>
+//                         <th>exp.</th>
+//                         <th>imgurl</th>
+//                         <th>students</th>
+//                         <th>mail</th>
+//                         <th>web</th>
+//                         <th>contact</th>
+//                         <th></th>
+//                         <th>edit</th>
+//                         <th>delete</th>
+//                     </tr>
+//                 </thead>
+//                 <tbody>{props.universities.map(renderUniversity)}</tbody>
+//             </Table>
+//         );
+//     } else {
+//         return <span>No Data Found</span>;
+//     }
+// };
 
 export default class Dashboard extends React.Component {
     constructor(props) {
@@ -117,6 +141,17 @@ export default class Dashboard extends React.Component {
 
     notifyFailure = (msg) =>
         toast.error(msg, {
+            position: "bottom-left",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+
+    notifyDanger = (msg) =>
+        toast.warning(msg, {
             position: "bottom-left",
             autoClose: 3000,
             hideProgressBar: false,
@@ -188,6 +223,83 @@ export default class Dashboard extends React.Component {
             });
     }
 
+    renderUniversity = (university) => {
+        return (
+            <tr key={university.uid}>
+                <td>{university.uid}</td>
+                <td>{university.uniname}</td>
+                <td>{university.registration_date}</td>
+                <td>{university.expiry_date}</td>
+                <td>{university.imgurl}</td>
+                <td>{university.students}</td>
+                <td>{university.email}</td>
+                <td>{university.weburl}</td>
+                <td>{university.contact_no}</td>
+                <td></td>
+                <td align="center">
+                    <span>
+                        <FontAwesomeIcon icon={faPen} />
+                    </span>
+                </td>
+                <td align="center">
+                    <span
+                        onClick={() => {
+                            userService
+                                .deleteUniversity(university.uid)
+                                .then((response) => {
+                                    if (response.success) {
+                                        this.notifyDanger(
+                                            response.success.message
+                                        );
+                                        this.fetchUnis();
+                                    } else {
+                                        this.notifyFailure(
+                                            response.error.message
+                                        );
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        }}
+                    >
+                        <FontAwesomeIcon icon={faTrash} />
+                    </span>
+                </td>
+            </tr>
+        );
+    };
+
+    UniTable = (props) => {
+        if (props.universities && props.universities.length !== 0) {
+            return (
+                <Table hover responsive>
+                    <thead>
+                        <tr>
+                            <th>uid</th>
+                            <th>name</th>
+                            <th>reg.</th>
+                            <th>exp.</th>
+                            <th>imgurl</th>
+                            <th>students</th>
+                            <th>mail</th>
+                            <th>web</th>
+                            <th>contact</th>
+                            <th></th>
+                            <th>edit</th>
+                            <th>delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {props.universities.map(this.renderUniversity)}
+                    </tbody>
+                </Table>
+            );
+        } else {
+            return <span>No Data Found</span>;
+        }
+    };
+
     componentDidMount() {
         this.fetchUnis();
     }
@@ -197,7 +309,8 @@ export default class Dashboard extends React.Component {
             <Fragment>
                 <div className="container">
                     <h4>Universities</h4>
-                    <UniTable universities={this.state.universities} />
+                    {/* <UniTable universities={this.state.universities} /> */}
+                    {this.UniTable({ universities: this.state.universities })}
                     <Button color="primary" onClick={this.toggleModal}>
                         Add
                     </Button>

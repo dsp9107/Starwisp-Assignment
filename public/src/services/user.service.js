@@ -14,17 +14,11 @@ class UserService {
         });
     }
 
-    // getUserBoard() {
-    //     return axios.get(API_URL + "user", { headers: authHeader() });
-    // }
-
-    // getModeratorBoard() {
-    //     return axios.get(API_URL + "mod", { headers: authHeader() });
-    // }
-
-    // getAdminBoard() {
-    //     return axios.get(API_URL + "admin", { headers: authHeader() });
-    // }
+    deleteUniversity(uniID) {
+        return axios.delete(API_URL + `/delete/${uniID}`).then((response) => {
+            return response.data;
+        });
+    }
 }
 
 export default new UserService();
