@@ -20,7 +20,7 @@ POST
 
 -   **Body**
 
-```json
+```
 {
     "username": [string],
     "password": [hashed-password]
@@ -30,11 +30,11 @@ POST
 -   **Expected Responses**
     -   Success
         -   Code: `200`
-        -   Body: `OK`
+        -   Body: `{"success":{"message":"Logged In","token":[token]}}`
         -   Cookies: `token`
     -   Failure
         -   Code: `404`
-        -   Body: `{"error": {"message": "incorrect credentials"}}`
+        -   Body: `{"error":{"message":"Incorrect Credentials"}}`
 
 ## Logout
 
@@ -55,8 +55,8 @@ GET
 -   **Expected Responses**
     -   Success
         -   Code: `200`
-        -   Body: `OK`
+        -   Body: `{"success":{"message":"Logged Out"}}`
         -   Cookies: `token:null`
     -   Failure
         -   Code: `401`
-        -   Body: `{"error":{"message":"not logged in"}}`
+        -   Body: `{"error":{"message":"Not Logged In"}}`

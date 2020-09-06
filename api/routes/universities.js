@@ -3,15 +3,12 @@ const router = express.Router();
 const universityController = require("../controllers/universityController");
 const checkAuth = require("../middleware/checkAuth");
 
-// fetch all universities
+// CRUD endpoints
 
-router.get("/", checkAuth, universityController.fetchUniversities);
-
-// add new university
-
-router.post("/new", checkAuth, universityController.addUniversity);
-router.put("/update/:id", checkAuth, universityController.updateUniversity);
-router.delete("/delete/:id", checkAuth, universityController.deleteUniversity);
+router.get("/", universityController.fetchUniversities);
+router.post("/new", universityController.addUniversity);
+router.put("/update/:id", universityController.updateUniversity);
+router.delete("/delete/:id", universityController.deleteUniversity);
 
 //Export
 

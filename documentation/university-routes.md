@@ -36,10 +36,10 @@ POST
 -   **Expected Responses**
     -   Success
         -   Code: `200`
-        -   Body: `{"result":{"message":"Addition Successful","id":[int]}}`
+        -   Body: `{"success":{"message":"Addition Successful","payload":[int]}}`
     -   Unauthorized
         -   Code: `401`
-        -   Body: `{"error":{"message":"not logged in"}}`
+        -   Body: `{"error":{"message":"Not Logged In"}}`
 
 ## Read All
 
@@ -99,13 +99,13 @@ PUT
 -   **Expected Responses**
     -   Success
         -   Code: `200`
-        -   Body: `{"result":{"message":"Updation Successful"}}`
+        -   Body: `{"success":{"message":"Updation Successful"}}`
     -   Failure
         -   Code: `404`
         -   Body: `{"result":{"message":"No Entry Found"}}`
     -   Unauthorized
         -   Code: `401`
-        -   Body: `{"error":{"message":"not logged in"}}`
+        -   Body: `{"error":{"message":"Not Logged In"}}`
 
 ## Delete One
 
@@ -126,10 +126,10 @@ DELETE
 -   **Expected Responses**
     -   Success
         -   Code: `200`
-        -   Body: `{"result":{"message":"Deletion Successful"}}`
+        -   Body: `{"success":{"message":"Deletion Successful"}}`
     -   Failure
         -   Code: `404`
-        -   Body: `{"result":{"message":"No Entry Found"}}`
+        -   Body: `{"error":{"message":"No Entry Found"}}`
     -   Unauthorized
         -   Code: `401`
-        -   Body: `{"error":{"message":"not logged in"}}`
+        -   Body: `{"error":{"message":"Not Logged In"}}`
