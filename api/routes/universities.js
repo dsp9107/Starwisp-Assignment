@@ -5,10 +5,10 @@ const checkAuth = require("../middleware/checkAuth");
 
 // CRUD endpoints
 
-router.get("/", universityController.fetchUniversities);
-router.post("/new", universityController.addUniversity);
-router.put("/update/:id", universityController.updateUniversity);
-router.delete("/delete/:id", universityController.deleteUniversity);
+router.get("/", checkAuth, universityController.fetchUniversities);
+router.post("/new", checkAuth, universityController.addUniversity);
+router.put("/update/:id", checkAuth, universityController.updateUniversity);
+router.delete("/delete/:id", checkAuth, universityController.deleteUniversity);
 
 //Export
 

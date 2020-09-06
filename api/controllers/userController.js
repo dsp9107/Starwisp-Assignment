@@ -40,17 +40,12 @@ exports.login = (req, res, next) => {
         })
         .then(generateJWT)
         .then((token) =>
-            res
-                .cookie("token", token, {
-                    secure: process.env.DB_ENV === "production" ? true : false,
-                    httpOnly: true,
-                })
-                .json({
-                    success: {
-                        message: "Logged In",
-                        payload: token,
-                    },
-                })
+            res.json({
+                success: {
+                    message: "Logged In",
+                    payload: token,
+                },
+            })
         )
         .catch((err) => {
             console.log(err);

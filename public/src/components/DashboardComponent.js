@@ -12,7 +12,6 @@ import {
     Input,
     FormFeedback,
     FormText,
-    
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
@@ -22,7 +21,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import UserService from "../services/user.service";
-import userService from "../services/user.service";
+import AuthService from "../services/auth.service";
 
 export default class Dashboard extends React.Component {
     constructor(props) {
@@ -183,8 +182,7 @@ export default class Dashboard extends React.Component {
     handleUpdateSubmit(event) {
         event.preventDefault();
 
-        userService
-            .updateUniversity(this.state.updateUni)
+        UserService.updateUniversity(this.state.updateUni)
             .then((response) => {
                 if (response.success) {
                     this.notifySuccess(response.success.message);
@@ -295,8 +293,7 @@ export default class Dashboard extends React.Component {
                 <td align="center">
                     <span
                         onClick={() => {
-                            userService
-                                .deleteUniversity(university.uid)
+                            UserService.deleteUniversity(university.uid)
                                 .then((response) => {
                                     if (response.success) {
                                         this.notifyDanger(
@@ -351,302 +348,332 @@ export default class Dashboard extends React.Component {
     };
 
     componentDidMount() {
-        this.fetchUnis();
+        if (AuthService.getCurrentUser()) this.fetchUnis();
     }
 
     render() {
-        return (
-            <Fragment>
+        if (AuthService.getCurrentUser()) {
+            return (
+                <Fragment>
+                    <div className="container">
+                        <h4>Universities</h4>
+                        {this.UniTable({
+                            universities: this.state.universities,
+                        })}
+                        <Button color="primary" onClick={this.toggleAddModal}>
+                            Add
+                        </Button>
+                    </div>
+
+                    <Modal
+                        isOpen={this.state.isAddModalOpen}
+                        toggle={this.toggleAddModal}
+                        className={this.props.className}
+                    >
+                        <ModalHeader toggle={this.toggleAddModal}>
+                            Register University
+                        </ModalHeader>
+                        <ModalBody>
+                            <Form onSubmit={this.handleAddSubmit}>
+                                <FormGroup>
+                                    <Label for="uniname">Name</Label>
+                                    <Input
+                                        type="text"
+                                        id="uniname"
+                                        name="uniname"
+                                        innerRef={(input) =>
+                                            (this.uniname = input)
+                                        }
+                                        onChange={this.handleAddChange}
+                                        invalid={!!this.state.errors.uniname}
+                                        required
+                                    />
+                                    <FormText>Required</FormText>
+                                    <FormFeedback>
+                                        Max. 64 characters
+                                    </FormFeedback>
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label for="registration_date">
+                                        Reg. Date
+                                    </Label>
+                                    <Input
+                                        type="date"
+                                        name="date"
+                                        id="registration_date"
+                                        onChange={this.handleAddChange}
+                                        required
+                                    />
+                                    <FormText>Required</FormText>
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label for="expiry_date">Exp. Date</Label>
+                                    <Input
+                                        type="date"
+                                        name="date"
+                                        id="expiry_date"
+                                        onChange={this.handleAddChange}
+                                    />
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label for="imgurl">Image URL</Label>
+                                    <Input
+                                        type="url"
+                                        name="url"
+                                        id="imgurl"
+                                        onChange={this.handleAddChange}
+                                    />
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label for="no_of_students">
+                                        No. of Students
+                                    </Label>
+                                    <Input
+                                        type="number"
+                                        name="number"
+                                        id="no_of_students"
+                                        onChange={this.handleAddChange}
+                                        invalid={
+                                            !!this.state.errors.no_of_students
+                                        }
+                                    />
+                                    <FormFeedback>
+                                        Max. value 65535
+                                    </FormFeedback>
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label for="email">Email</Label>
+                                    <Input
+                                        type="email"
+                                        name="email"
+                                        id="email"
+                                        onChange={this.handleAddChange}
+                                        required
+                                    />
+                                    <FormText>Required</FormText>
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label for="weburl">Web URL</Label>
+                                    <Input
+                                        type="url"
+                                        name="url"
+                                        id="weburl"
+                                        onChange={this.handleAddChange}
+                                    />
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label for="contact_no">Contact No.</Label>
+                                    <Input
+                                        type="number"
+                                        name="number"
+                                        id="contact_no"
+                                        onChange={this.handleAddChange}
+                                        invalid={!!this.state.errors.contact_no}
+                                        required
+                                    />
+                                    <FormText>Required</FormText>
+                                    <FormFeedback>Max. 10 digits</FormFeedback>
+                                </FormGroup>
+
+                                <span color="danger">
+                                    {this.state.registerError}
+                                </span>
+                                <FormGroup>
+                                    <Button type="submit" color="primary">
+                                        Register
+                                    </Button>
+                                </FormGroup>
+                            </Form>
+                        </ModalBody>
+                    </Modal>
+
+                    <Modal
+                        isOpen={this.state.isUpdateModalOpen}
+                        toggle={this.toggleUpdateModal}
+                        className={this.props.className}
+                    >
+                        <ModalHeader toggle={this.toggleUpdateModal}>
+                            Update University
+                        </ModalHeader>
+                        <ModalBody>
+                            <Form onSubmit={this.handleUpdateSubmit}>
+                                <FormGroup>
+                                    <Label for="uniname">Name</Label>
+                                    <Input
+                                        type="text"
+                                        id="uniname"
+                                        name="uniname"
+                                        value={
+                                            this.state.updateUni.university
+                                                .uniname
+                                        }
+                                        onChange={this.handleUpdateChange}
+                                        invalid={!!this.state.errors.uniname}
+                                        required
+                                    />
+                                    <FormText>Required</FormText>
+                                    <FormFeedback>
+                                        Max. 64 characters
+                                    </FormFeedback>
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label for="registration_date">
+                                        Reg. Date
+                                    </Label>
+                                    <Input
+                                        type="date"
+                                        name="date"
+                                        value={this.state.updateUni.university.registration_date.slice(
+                                            0,
+                                            10
+                                        )}
+                                        id="registration_date"
+                                        onChange={this.handleUpdateChange}
+                                        required
+                                    />
+                                    <FormText>Required</FormText>
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label for="expiry_date">Exp. Date</Label>
+                                    <Input
+                                        type="date"
+                                        name="date"
+                                        value={
+                                            this.state.updateUni.university
+                                                .expiry_date
+                                                ? this.state.updateUni.university.expiry_date.slice(
+                                                      0,
+                                                      10
+                                                  )
+                                                : ""
+                                        }
+                                        id="expiry_date"
+                                        onChange={this.handleUpdateChange}
+                                    />
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label for="imgurl">Image URL</Label>
+                                    <Input
+                                        type="url"
+                                        name="url"
+                                        value={
+                                            this.state.updateUni.university
+                                                .imgurl !== null
+                                                ? this.state.updateUni
+                                                      .university.imgurl
+                                                : ""
+                                        }
+                                        id="imgurl"
+                                        onChange={this.handleUpdateChange}
+                                    />
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label for="no_of_students">
+                                        No. of Students
+                                    </Label>
+                                    <Input
+                                        type="number"
+                                        name="number"
+                                        value={
+                                            this.state.updateUni.university
+                                                .no_of_students !== null
+                                                ? this.state.updateUni
+                                                      .university.no_of_students
+                                                : ""
+                                        }
+                                        id="no_of_students"
+                                        onChange={this.handleUpdateChange}
+                                        invalid={
+                                            !!this.state.errors.no_of_students
+                                        }
+                                    />
+                                    <FormFeedback>
+                                        Max. value 65535
+                                    </FormFeedback>
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label for="email">Email</Label>
+                                    <Input
+                                        type="email"
+                                        name="email"
+                                        value={
+                                            this.state.updateUni.university
+                                                .email
+                                        }
+                                        id="email"
+                                        onChange={this.handleUpdateChange}
+                                        required
+                                    />
+                                    <FormText>Required</FormText>
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label for="weburl">Web URL</Label>
+                                    <Input
+                                        type="url"
+                                        name="url"
+                                        value={
+                                            this.state.updateUni.university
+                                                .weburl !== null
+                                                ? this.state.updateUni
+                                                      .university.weburl
+                                                : ""
+                                        }
+                                        id="weburl"
+                                        onChange={this.handleUpdateChange}
+                                    />
+                                </FormGroup>
+
+                                <FormGroup>
+                                    <Label for="contact_no">Contact No.</Label>
+                                    <Input
+                                        type="number"
+                                        name="number"
+                                        value={
+                                            this.state.updateUni.university
+                                                .contact_no
+                                        }
+                                        id="contact_no"
+                                        onChange={this.handleUpdateChange}
+                                        invalid={!!this.state.errors.contact_no}
+                                        required
+                                    />
+                                    <FormText>Required</FormText>
+                                    <FormFeedback>Max. 10 digits</FormFeedback>
+                                </FormGroup>
+
+                                <span color="danger">
+                                    {this.state.updateError}
+                                </span>
+                                <FormGroup>
+                                    <Button type="submit" color="primary">
+                                        Update
+                                    </Button>
+                                </FormGroup>
+                            </Form>
+                        </ModalBody>
+                    </Modal>
+
+                    <ToastContainer />
+                </Fragment>
+            );
+        } else
+            return (
                 <div className="container">
-                    <h4>Universities</h4>
-                    {/* <UniTable universities={this.state.universities} /> */}
-                    {this.UniTable({ universities: this.state.universities })}
-                    <Button color="primary" onClick={this.toggleAddModal}>
-                        Add
-                    </Button>
+                    <h4>You need to log in first</h4>
                 </div>
-
-                <Modal
-                    isOpen={this.state.isAddModalOpen}
-                    toggle={this.toggleAddModal}
-                    className={this.props.className}
-                >
-                    <ModalHeader toggle={this.toggleAddModal}>
-                        Register University
-                    </ModalHeader>
-                    <ModalBody>
-                        <Form onSubmit={this.handleAddSubmit}>
-                            <FormGroup>
-                                <Label for="uniname">Name</Label>
-                                <Input
-                                    type="text"
-                                    id="uniname"
-                                    name="uniname"
-                                    innerRef={(input) => (this.uniname = input)}
-                                    onChange={this.handleAddChange}
-                                    invalid={!!this.state.errors.uniname}
-                                    required
-                                />
-                                <FormText>Required</FormText>
-                                <FormFeedback>Max. 64 characters</FormFeedback>
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label for="registration_date">Reg. Date</Label>
-                                <Input
-                                    type="date"
-                                    name="date"
-                                    id="registration_date"
-                                    onChange={this.handleAddChange}
-                                    required
-                                />
-                                <FormText>Required</FormText>
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label for="expiry_date">Exp. Date</Label>
-                                <Input
-                                    type="date"
-                                    name="date"
-                                    id="expiry_date"
-                                    onChange={this.handleAddChange}
-                                />
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label for="imgurl">Image URL</Label>
-                                <Input
-                                    type="url"
-                                    name="url"
-                                    id="imgurl"
-                                    onChange={this.handleAddChange}
-                                />
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label for="no_of_students">
-                                    No. of Students
-                                </Label>
-                                <Input
-                                    type="number"
-                                    name="number"
-                                    id="no_of_students"
-                                    onChange={this.handleAddChange}
-                                    invalid={!!this.state.errors.no_of_students}
-                                />
-                                <FormFeedback>Max. value 65535</FormFeedback>
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label for="email">Email</Label>
-                                <Input
-                                    type="email"
-                                    name="email"
-                                    id="email"
-                                    onChange={this.handleAddChange}
-                                    required
-                                />
-                                <FormText>Required</FormText>
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label for="weburl">Web URL</Label>
-                                <Input
-                                    type="url"
-                                    name="url"
-                                    id="weburl"
-                                    onChange={this.handleAddChange}
-                                />
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label for="contact_no">Contact No.</Label>
-                                <Input
-                                    type="number"
-                                    name="number"
-                                    id="contact_no"
-                                    onChange={this.handleAddChange}
-                                    invalid={!!this.state.errors.contact_no}
-                                    required
-                                />
-                                <FormText>Required</FormText>
-                                <FormFeedback>Max. 10 digits</FormFeedback>
-                            </FormGroup>
-
-                            <span color="danger">
-                                {this.state.registerError}
-                            </span>
-                            <FormGroup>
-                                <Button type="submit" color="primary">
-                                    Register
-                                </Button>
-                            </FormGroup>
-                        </Form>
-                    </ModalBody>
-                </Modal>
-
-                <Modal
-                    isOpen={this.state.isUpdateModalOpen}
-                    toggle={this.toggleUpdateModal}
-                    className={this.props.className}
-                >
-                    <ModalHeader toggle={this.toggleUpdateModal}>
-                        Update University
-                    </ModalHeader>
-                    <ModalBody>
-                        <Form onSubmit={this.handleUpdateSubmit}>
-                            <FormGroup>
-                                <Label for="uniname">Name</Label>
-                                <Input
-                                    type="text"
-                                    id="uniname"
-                                    name="uniname"
-                                    value={
-                                        this.state.updateUni.university.uniname
-                                    }
-                                    onChange={this.handleUpdateChange}
-                                    invalid={!!this.state.errors.uniname}
-                                    required
-                                />
-                                <FormText>Required</FormText>
-                                <FormFeedback>Max. 64 characters</FormFeedback>
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label for="registration_date">Reg. Date</Label>
-                                <Input
-                                    type="date"
-                                    name="date"
-                                    value={this.state.updateUni.university.registration_date.slice(
-                                        0,
-                                        10
-                                    )}
-                                    id="registration_date"
-                                    onChange={this.handleUpdateChange}
-                                    required
-                                />
-                                <FormText>Required</FormText>
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label for="expiry_date">Exp. Date</Label>
-                                <Input
-                                    type="date"
-                                    name="date"
-                                    value={
-                                        this.state.updateUni.university
-                                            .expiry_date
-                                            ? this.state.updateUni.university.expiry_date.slice(
-                                                  0,
-                                                  10
-                                              )
-                                            : ""
-                                    }
-                                    id="expiry_date"
-                                    onChange={this.handleUpdateChange}
-                                />
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label for="imgurl">Image URL</Label>
-                                <Input
-                                    type="url"
-                                    name="url"
-                                    value={
-                                        this.state.updateUni.university
-                                            .imgurl !== null
-                                            ? this.state.updateUni.university
-                                                  .imgurl
-                                            : ""
-                                    }
-                                    id="imgurl"
-                                    onChange={this.handleUpdateChange}
-                                />
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label for="no_of_students">
-                                    No. of Students
-                                </Label>
-                                <Input
-                                    type="number"
-                                    name="number"
-                                    value={
-                                        this.state.updateUni.university
-                                            .no_of_students !== null
-                                            ? this.state.updateUni.university
-                                                  .no_of_students
-                                            : ""
-                                    }
-                                    id="no_of_students"
-                                    onChange={this.handleUpdateChange}
-                                    invalid={!!this.state.errors.no_of_students}
-                                />
-                                <FormFeedback>Max. value 65535</FormFeedback>
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label for="email">Email</Label>
-                                <Input
-                                    type="email"
-                                    name="email"
-                                    value={
-                                        this.state.updateUni.university.email
-                                    }
-                                    id="email"
-                                    onChange={this.handleUpdateChange}
-                                    required
-                                />
-                                <FormText>Required</FormText>
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label for="weburl">Web URL</Label>
-                                <Input
-                                    type="url"
-                                    name="url"
-                                    value={
-                                        this.state.updateUni.university
-                                            .weburl !== null
-                                            ? this.state.updateUni.university
-                                                  .weburl
-                                            : ""
-                                    }
-                                    id="weburl"
-                                    onChange={this.handleUpdateChange}
-                                />
-                            </FormGroup>
-
-                            <FormGroup>
-                                <Label for="contact_no">Contact No.</Label>
-                                <Input
-                                    type="number"
-                                    name="number"
-                                    value={
-                                        this.state.updateUni.university
-                                            .contact_no
-                                    }
-                                    id="contact_no"
-                                    onChange={this.handleUpdateChange}
-                                    invalid={!!this.state.errors.contact_no}
-                                    required
-                                />
-                                <FormText>Required</FormText>
-                                <FormFeedback>Max. 10 digits</FormFeedback>
-                            </FormGroup>
-
-                            <span color="danger">{this.state.updateError}</span>
-                            <FormGroup>
-                                <Button type="submit" color="primary">
-                                    Update
-                                </Button>
-                            </FormGroup>
-                        </Form>
-                    </ModalBody>
-                </Modal>
-
-                <ToastContainer />
-            </Fragment>
-        );
+            );
     }
 }
