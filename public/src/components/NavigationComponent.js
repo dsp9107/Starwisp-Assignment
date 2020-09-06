@@ -29,7 +29,6 @@ export default class App extends React.Component {
 
         this.toggleCollapse = this.toggleCollapse.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
-        // this.toggleAuth = this.toggleAuth.bind(this);
         this.handleLogin = this.handleLogin.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
 
@@ -52,44 +51,28 @@ export default class App extends React.Component {
         });
     }
 
-    // toggleAuth() {
-    //     window.sessionStorage.setItem(
-    //         "userLoggedIn",
-    //         JSON.stringify(!this.state.isLoggedIn)
-    //     );
-    //     this.setState({
-    //         isLoggedIn: !this.state.isLoggedIn,
-    //     });
-    // }
-
     handleLogin(event) {
         AuthService.login(this.username.value, this.password.value)
             .then((result) => {
                 if (result.success) {
                     this.toggleModal();
-                    // this.toggleAuth();
                     window.location.href = "/dashboard";
                 } else if (result.error) {
-                    throw new Error(result.error.message);
+                    throw new Error(result.error.data.error.message);
                 }
             })
             .catch((error) => {
+                console.log(error);
                 this.setState({
                     loginError: error.message,
                 });
-                console.log(error);
             });
 
         event.preventDefault();
     }
 
-    componentDidMount() {
-        // sessionStorage.setItem("isUserLogged", false);
-    }
-
     handleLogout() {
         AuthService.logout();
-        // this.toggleAuth();
         window.location.href = "/home";
     }
 
@@ -101,13 +84,6 @@ export default class App extends React.Component {
                     <NavbarToggler onClick={this.toggleCollapse} />
                     <Collapse isOpen={this.state.isCollapseOpen} navbar>
                         <Nav className="ml-auto" navbar>
-                            {!!this.state.user === true && (
-                                <NavItem>
-                                    <NavLink href="/dashboard">
-                                        Dashboard
-                                    </NavLink>
-                                </NavItem>
-                            )}
                             {!!this.state.user === true && (
                                 <UncontrolledDropdown nav inNavbar>
                                     <DropdownToggle nav caret>
@@ -156,7 +132,6 @@ export default class App extends React.Component {
                                     innerRef={(input) =>
                                         (this.username = input)
                                     }
-                                    value="dsp9107"
                                 />
                             </FormGroup>
 
@@ -170,7 +145,6 @@ export default class App extends React.Component {
                                     innerRef={(input) =>
                                         (this.password = input)
                                     }
-                                    value="somethingVerySecure"
                                 />
                             </FormGroup>
 
