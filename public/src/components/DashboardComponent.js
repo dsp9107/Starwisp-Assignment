@@ -19,6 +19,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ReactPaginate from "react-paginate";
 
 import UserService from "../services/user.service";
 import AuthService from "../services/auth.service";
@@ -33,6 +34,7 @@ export default class Dashboard extends React.Component {
         this.handleUpdateChange = this.handleUpdateChange.bind(this);
         this.handleAddSubmit = this.handleAddSubmit.bind(this);
         this.handleUpdateSubmit = this.handleUpdateSubmit.bind(this);
+        this.handlePageClick = this.handlePageClick.bind(this);
 
         this.state = {
             universities: [],
@@ -57,6 +59,10 @@ export default class Dashboard extends React.Component {
                     contact_no: "",
                 },
             },
+            offset: 0,
+            data: [],
+            perPage: 3,
+            currentPage: 0,
         };
     }
 
@@ -203,14 +209,45 @@ export default class Dashboard extends React.Component {
             });
     }
 
+    handlePageClick = (e) => {
+        const selectedPage = e.selected;
+        const offset = selectedPage * this.state.perPage;
+
+        this.setState(
+            {
+                currentPage: selectedPage,
+                offset: offset,
+            },
+            () => {
+                this.fetchUnis();
+            }
+        );
+    };
+
     fetchUnis() {
         UserService.getUniversities()
             .then((response) => {
-                if (response.data.success)
-                    this.setState({
-                        universities: response.data.success.payload,
-                    });
-                else {
+                if (response.data.success) {
+                    let data = response.data.success.payload;
+                    {
+                        this.setState({
+                            universities: response.data.success.payload,
+                        });
+                        const slice = data.slice(
+                            this.state.offset,
+                            this.state.offset + this.state.perPage
+                        );
+                        const postData = slice.map((pd) =>
+                            this.renderUniversity(pd)
+                        );
+                        this.setState({
+                            pageCount: Math.ceil(
+                                data.length / this.state.perPage
+                            ),
+                            postData,
+                        });
+                    }
+                } else {
                     this.setState({
                         fetchError: response.data.error.message,
                     });
@@ -247,7 +284,6 @@ export default class Dashboard extends React.Component {
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            {" "}
                             <FontAwesomeIcon icon={faExternalLinkAlt} />
                         </a>
                     ) : (
@@ -357,10 +393,45 @@ export default class Dashboard extends React.Component {
                 <Fragment>
                     <div className="container">
                         <h4>Universities</h4>
-                        {this.UniTable({
+                        {/* {this.UniTable({
                             universities: this.state.universities,
-                        })}
-                        <Button color="primary" onClick={this.toggleAddModal}>
+                        })} */}
+                        <Table hover responsive>
+                            <thead>
+                                <tr>
+                                    <th>uid</th>
+                                    <th>name</th>
+                                    <th>reg.</th>
+                                    <th>exp.</th>
+                                    <th>img</th>
+                                    <th>students</th>
+                                    <th>mail</th>
+                                    <th>web</th>
+                                    <th>contact</th>
+                                    <th>edit</th>
+                                    <th>delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>{this.state.postData}</tbody>
+                        </Table>
+                        <ReactPaginate
+                            previousLabel={"prev"}
+                            nextLabel={"next"}
+                            breakLabel={"..."}
+                            breakClassName={"break-me"}
+                            pageCount={this.state.pageCount}
+                            marginPagesDisplayed={2}
+                            pageRangeDisplayed={5}
+                            onPageChange={this.handlePageClick}
+                            containerClassName={"pagination"}
+                            subContainerClassName={"pages pagination"}
+                            activeClassName={"active"}
+                        />
+                        <Button
+                            className="addButton"
+                            color="primary"
+                            onClick={this.toggleAddModal}
+                        >
                             Add
                         </Button>
                     </div>
