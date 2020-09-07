@@ -46,6 +46,12 @@ cd public
 yarn serve
 ```
 
+- Credentials
+
+| username | password |
+|-|-|
+| dsp9107 | pentagon |
+
 ## API
 
 All the entrypoints are defined here.
