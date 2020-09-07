@@ -68,7 +68,6 @@ exports.updateUniversity = (req, res, next) => {
                 .then((conn) => {
                     query(conn, q, req.body)
                         .then((result) => {
-                            console.log(result);
                             if (result.affectedRows == 1) {
                                 res.json({
                                     success: { message: "Updation Successful" },
@@ -110,7 +109,6 @@ exports.deleteUniversity = (req, res, next) => {
             query(conn, `DELETE FROM Uni_details WHERE uid = ${req.params.id}`)
         )
         .then((result) => {
-            console.log(result);
             if (result.affectedRows == 1) {
                 res.json({
                     success: { message: "Deletion Successful" },

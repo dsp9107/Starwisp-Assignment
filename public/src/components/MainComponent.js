@@ -9,6 +9,7 @@ export default class Main extends React.Component {
             return (
                 <div className="container">
                     <h4>Home</h4>
+                    <p>Login to continue</p>
                 </div>
             );
         };
